@@ -1,0 +1,45 @@
+.answer-text {
+  width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.input-adorment {
+  max-height: unset !important;
+  display: flex;
+  justify-content: center;
+  width: 48px;
+  height: 86px;
+}
+
+.input-adorment-icon {
+  color: #fff;
+}
+
+.answer-text-input {
+  border: none !important;
+  color: #fff !important;
+  caret-color: black;
+  flex: 1;
+}
+
+.answer-text .answer-text-input::placeholder {
+  color: black !important;
+  opacity: 1 !important;
+}
+
+.answer-text-input::before {
+  border-bottom: none !important; /* Estado normal */
+}
+
+.answer-text-input:hover::before {
+  border-bottom: none !important; /* Estado hover */
+}
+
+.answer-text-input::after {
+  border-bottom: none !important; /* Estado focus */
+}
