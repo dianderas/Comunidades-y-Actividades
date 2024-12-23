@@ -1,6 +1,6 @@
 import { Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useModalStore } from '../../../stores/zubstand';
+import { useModalStore } from '../../../../../stores/zubstand';
 
 export const SelectActivityModal = () => {
   const { closeModal } = useModalStore();

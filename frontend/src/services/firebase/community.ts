@@ -1,29 +1,57 @@
-import { addDoc, collection, doc, documentId, getDoc, getDocs, query, serverTimestamp, where } from "firebase/firestore";
+import { collection, documentId, getDocs, query, where } from "firebase/firestore";
+import { httpsCallable } from 'firebase/functions';
 import { Community } from "../../stores/zubstand";
-import { db } from "./config";
+import { db, functions } from "./config";
+
+interface ComuniityMember {
+  id: string;
+  nickname: string;
+  avatar: string;
+  email: string;
+  createdAt: string;
+}
+
+interface CommunityDetailsResponse {
+  communityId: string;
+  createdAt: string;
+  description: string;
+  settings: { privacy: string }
+  inviteToken: string;
+  members: ComuniityMember[];
+}
+
+interface CommunityDetailsRequest {
+  communityId: string;
+}
+
+interface CommunitytoInviteRequest {
+  token: string;
+}
+
+export interface CommunitytoInviteResponse {
+  id: string;
+  name: string;
+  avatar: string;
+}
 
 interface CreateCommunityRequest {
-  communityName: string;
+  name: string;
+  avatar: string;
+  ownerId?: string;
+}
+
+interface addMemberRequest {
+  communityId: string;
   userId: string;
-  avatar: string;
 }
 
-interface CommunityDetails {
-  description: string;
-  settings: {
-    privacy: string;
-  };
-}
-
-interface CreateCommunityRequest {
-  communityName: string;
-  avatar: string;
-  description: string;
-  ownerId: string;
+interface addMemberResponse {
+  success: boolean;
+  message: string;
 }
 
 export const createCommunity = async ({
-  communityName,
+  name,
   avatar,
   ownerId,
 }: CreateCommunityRequest) => {
@@ -31,11 +59,11 @@ export const createCommunity = async ({
     throw new Error("User not authenticated");
   }
 
-  return await addDoc(collection(db, "communities"), {
-    name: communityName,
+  const fnCreateCommunity = httpsCallable<CreateCommunityRequest, { communityId: string }>(functions, "createCommunity");
+
+  return await fnCreateCommunity({
+    name,
     avatar: avatar || '',
-    owner: ownerId,
-    createAt: serverTimestamp(),
   });
 };
 
@@ -65,19 +93,25 @@ export const getUserCommunities = async (userId: string): Promise<Community[]> =
   }));
 };
 
-export const getCommunityDetails = async (
-  communityId: string
-): Promise<CommunityDetails | null> => {
-  if (!communityId) {
-    throw new Error('Community ID is required');
-  }
+export const getCommunityDetails = async (communityId: string) => {
 
-  const detailsDoc = await getDoc(doc(db, 'community_details', communityId));
+  const fnGetCommunityDetails =
+    httpsCallable<CommunityDetailsRequest, CommunityDetailsResponse>(functions, "getCommunityDetails");
 
-  if (detailsDoc.exists()) {
-    return detailsDoc.data() as CommunityDetails;
-  }
+  return await fnGetCommunityDetails({ communityId });
 
-  console.warn(`No se encontraron detalles para la comunidad con ID: ${communityId}`);
-  return null;
 };
+
+export const getCommunityByInviteToken = async (token: string) => {
+  const fnFetchCommunityByInviteToken =
+    httpsCallable<CommunitytoInviteRequest, CommunitytoInviteResponse>(functions, "getCommunityByInviteToken");
+
+  return await fnFetchCommunityByInviteToken({ token });
+}
+
+export const addMemberToCommunity = async ({ communityId, userId }: addMemberRequest) => {
+  const fnAddMemberToCommunity =
+    httpsCallable<addMemberRequest, addMemberResponse>(functions, 'addMemberToCommunity');
+
+  return await fnAddMemberToCommunity({ communityId, userId })
+}

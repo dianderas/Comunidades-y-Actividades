@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getUserCommunities } from '../../services/firebase';
 import { useCommunityStore } from '../../stores/zubstand';
 import { useAuthStore } from '../../stores/zubstand/authStore';
-import { AppBar, CommunnitiesList } from './components';
+import { AppBar, CommunityDetails, CommunnitiesList } from './components';
 import './Dashboard.css';
 import { useApi } from '../../hooks';
 
@@ -34,7 +34,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (data && storedCommunities.length === 0) {
-      console.log('setCommunities initial', data);
+      console.log(data);
       setCommunities(data);
       if (data.length === 0) {
         return;
@@ -71,17 +71,7 @@ export const Dashboard = () => {
         <div className="dashboard-comunities dashboard-paper">
           <CommunnitiesList loading={loading} />
         </div>
-        <div className="dashboard-channels dashboard-paper"></div>
-        <div className="dashboard-content dashboard-paper">
-          {selectedCommunityId ? (
-            <p>Contenido de la comunidad con id: {selectedCommunityId}</p>
-          ) : storedCommunities.length === 0 ? (
-            <p>No tienes comunidades. Crea una nueva.</p>
-          ) : (
-            <p>No hay comunidad seleccionada</p>
-          )}
-        </div>
-        <div className="dashboard-members dashboard-paper">Columna D</div>
+        <CommunityDetails communityId={selectedCommunityId} />
       </main>
     </>
   );

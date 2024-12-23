@@ -13,3 +13,7 @@ backend/dist/
 
 # Ignorar logs
 *.log
+
+firebase-debug.log
+firebase-export-**
+.github/

@@ -2,7 +2,6 @@ import AdbIcon from '@mui/icons-material/Adb';
 import {
   Avatar,
   Box,
-  Button,
   IconButton,
   Menu,
   MenuItem,
@@ -14,13 +13,11 @@ import MuiAppBar from '@mui/material/AppBar';
 import { useState } from 'react';
 import { useApi } from '../../../../hooks';
 import { logout } from '../../../../services/firebase';
-import { useModalStore } from '../../../../stores/zubstand';
 
 const settings = ['Profile', 'Account', 'Logout'];
 
 export const AppBar = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const { openModal } = useModalStore();
 
   const { execute: logoutExecute } = useApi({
     request: logout,
@@ -35,10 +32,6 @@ export const AppBar = () => {
     if (setting === 'Logout') {
       await logoutExecute();
     }
-  };
-
-  const handleOpenSelectActivityModal = () => {
-    openModal('selectActivity');
   };
 
   return (
@@ -64,15 +57,6 @@ export const AppBar = () => {
             XD
           </Typography>
           <Box sx={{ ml: 'auto', display: 'flex', columnGap: 1 }}>
-            <Box>
-              <Button
-                sx={{ backgroundColor: 'white' }}
-                onClick={handleOpenSelectActivityModal}
-                variant="outlined"
-              >
-                Nueva Actividad
-              </Button>
-            </Box>
             <Box>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

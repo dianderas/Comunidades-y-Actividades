@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from './App';
 import { AuthRedirectGuard, PrivateGuard } from './guards';
 import { CreateTrivia, Dashboard } from './private';
-import { Login, Register } from './public';
+import { JoinCommunity, Login, Register } from './public';
 
 const router = createBrowserRouter([
   {
@@ -10,6 +10,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: '/', element: <Navigate to="/home" /> },
+      { path: '/join/:token', element: <JoinCommunity /> },
       {
         element: <AuthRedirectGuard />,
         children: [

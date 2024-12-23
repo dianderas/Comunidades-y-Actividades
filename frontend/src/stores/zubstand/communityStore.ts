@@ -12,16 +12,16 @@ interface ComminityStore {
   addCommunity: (community: Community) => void;
   selectCommunity: (communityId: string) => void;
   resetCommunityStore: () => void;
+  getCommunity: (id: string) => Community | undefined;
 }
 
-export const useCommunityStore = create<ComminityStore>((set) => ({
+export const useCommunityStore = create<ComminityStore>((set, get) => ({
   communities: [],
   selectedCommunityId: null,
 
   setCommunities: (communities) => set({ communities }),
 
   addCommunity: (community) => {
-    console.log('addCommunity', community);
     return set((state) => ({
       communities: [...state.communities, community],
       selectedCommunityId: community.id
@@ -32,4 +32,9 @@ export const useCommunityStore = create<ComminityStore>((set) => ({
     set(() => ({ selectedCommunityId: communityId })),
 
   resetCommunityStore: () => set({ communities: [], selectedCommunityId: null }),
+  getCommunity: (id: string) => {
+    const state = get();
+    const community = state.communities.find(c => c.id === id);
+    return community;
+  },
 }));

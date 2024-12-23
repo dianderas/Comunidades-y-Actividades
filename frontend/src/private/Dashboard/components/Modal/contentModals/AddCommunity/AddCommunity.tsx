@@ -10,10 +10,13 @@ import {
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import './AddCommunity.css';
-import { createCommunity } from '../../../../services/firebase';
-import { useApi } from '../../../../hooks';
-import { useCommunityStore, useModalStore } from '../../../../stores/zubstand';
-import { useAuthStore } from '../../../../stores/zubstand/authStore';
+import { createCommunity } from '../../../../../../services/firebase';
+import { useApi } from '../../../../../../hooks';
+import {
+  useCommunityStore,
+  useModalStore,
+} from '../../../../../../stores/zubstand';
+import { useAuthStore } from '../../../../../../stores/zubstand/authStore';
 import { useNavigate } from 'react-router-dom';
 
 const VisuallyHiddenInput = styled('input')({
@@ -59,15 +62,11 @@ export const AddCommunity = ({ setDisableClose }: Props) => {
 
   useEffect(() => {
     if (data) {
-      console.log('AddCommunity Comp', {
-        id: data.id,
-        name: communityName,
-      });
       addCommunity({
-        id: data.id,
+        id: data.data.communityId,
         name: communityName,
       });
-      navigate(`/community/${data.id}`, { replace: true });
+      navigate(`/community/${data.data.communityId}`, { replace: true });
       closeModal();
     }
   }, [data, closeModal, addCommunity, communityName, navigate]);
@@ -78,7 +77,7 @@ export const AddCommunity = ({ setDisableClose }: Props) => {
       return;
     }
 
-    await execute({ communityName: communityName, ownerId: user.uid });
+    await execute({ name: communityName, ownerId: user.uid });
   };
 
   return (

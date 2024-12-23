@@ -1,0 +1,13 @@
+.button-activities {
+  margin: 8px 0 !important;
+  width: 100%;
+  display: flex;
+  justify-content: left !important;
+  align-items: center;
+  color: #777777 !important;
+  text-transform: none !important;
+}
+
+.button-activities p {
+  margin-left: 4px;
+}

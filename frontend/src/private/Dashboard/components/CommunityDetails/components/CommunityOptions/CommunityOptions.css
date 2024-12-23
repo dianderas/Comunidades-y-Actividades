@@ -1,0 +1,12 @@
+.option-menu {
+  height: 52px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between !important;
+  align-items: center;
+}
+
+.option-menu-item-icon {
+  display: flex;
+  justify-content: flex-end;
+}
