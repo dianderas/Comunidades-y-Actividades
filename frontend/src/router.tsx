@@ -1,8 +1,17 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from './App';
 import { AuthRedirectGuard, PrivateGuard } from './guards';
-import { CreateTrivia, Dashboard } from './private';
-import { JoinCommunity, Login, Register } from './public';
+import { lazy, Suspense } from 'react';
+
+const Dashboard = lazy(() => import('./private/Dashboard/Dashboard'));
+const CreateTrivia = lazy(
+  () => import('./private/Activities/Trivia/CreateTrivia/CreateTrivia')
+);
+const JoinCommunity = lazy(
+  () => import('./public/JoinCommunity/JoinCommunity')
+);
+const Login = lazy(() => import('./public/Login/Login'));
+const Register = lazy(() => import('./public/Register/Register'));
 
 const router = createBrowserRouter([
   {
@@ -10,12 +19,33 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: '/', element: <Navigate to="/home" /> },
-      { path: '/join/:token', element: <JoinCommunity /> },
+      {
+        path: '/join/:token',
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <JoinCommunity />
+          </Suspense>
+        ),
+      },
       {
         element: <AuthRedirectGuard />,
         children: [
-          { path: '/login', element: <Login /> },
-          { path: '/register', element: <Register /> },
+          {
+            path: '/login',
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Login />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/register',
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Register />
+              </Suspense>
+            ),
+          },
         ],
       },
       {
@@ -23,11 +53,19 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/community/:communityId?',
-            element: <Dashboard />,
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Dashboard />
+              </Suspense>
+            ),
           },
           {
             path: '/community/activity/trivia',
-            element: <CreateTrivia />,
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <CreateTrivia />
+              </Suspense>
+            ),
           },
         ],
       },

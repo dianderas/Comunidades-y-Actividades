@@ -139,3 +139,5 @@ export const JoinCommunity = () => {
     </Container>
   );
 };
+
+export default JoinCommunity;

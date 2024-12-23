@@ -14,5 +14,6 @@ backend/dist/
 # Ignorar logs
 *.log
 
+dist/
 firebase-debug.log
 firebase-export-**

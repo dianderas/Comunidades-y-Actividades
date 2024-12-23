@@ -205,3 +205,5 @@ export const CreateTrivia = () => {
     </>
   );
 };
+
+export default CreateTrivia;
