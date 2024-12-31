@@ -7,8 +7,10 @@
   padding: 0 24px;
 }
 
-.btn-save {
+.btn-actions {
   margin-left: auto !important;
+  display: flex;
+  column-gap: 8px;
 }
 
 .question-editor {

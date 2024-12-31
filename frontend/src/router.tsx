@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from './App';
 import { AuthRedirectGuard, PrivateGuard } from './guards';
 import { lazy, Suspense } from 'react';
+import { TriviaRoom } from './private';
 
 const Dashboard = lazy(() => import('./private/Dashboard/Dashboard'));
 const CreateTrivia = lazy(
@@ -60,10 +61,18 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: '/community/activity/trivia',
+            path: '/community/:communityId/activity/trivia/:activityId?',
             element: (
               <Suspense fallback={<div>Loading...</div>}>
                 <CreateTrivia />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/community/:communityId/activity/room/:roomId?',
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <TriviaRoom />
               </Suspense>
             ),
           },

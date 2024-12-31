@@ -1,6 +1,5 @@
 const { https } = require('firebase-functions/v2');
 const admin = require('firebase-admin');
-const { FieldPath } = require('firebase-admin/firestore');
 
 const db = admin.firestore();
 
@@ -37,38 +36,70 @@ exports.getCommunityDetails = https.onCall(async ({ data, auth }) => {
       createdAt: communityDoc.data().createdAt.toDate().toISOString(),
     };
 
-    const membersSnaphost = await db
-      .collection('community_members')
-      .where('communityId', '==', communityId)
+    // Obtener los 5 últimos miembros de la comunidad
+    const membersSnapshot = await db
+      .collection('communities')
+      .doc(communityId)
+      .collection('members')
+      .orderBy('createdAt', 'desc')
+      .limit(5)
       .get();
 
-    const memberIds = membersSnaphost.docs.map((doc) => doc.data().userId);
-
-    const batchSize = 10;
-    const memberChunks = [];
-    for (let i = 0; i < memberIds.length; i += batchSize) {
-      memberChunks.push(memberIds.slice(i, i + batchSize));
-    }
-
-    const userPromises = memberChunks.map((chunk) =>
-      db.collection('users').where(FieldPath.documentId(), 'in', chunk).get()
+    const memberIds = membersSnapshot.docs.map((doc) => doc.id);
+    const userSnapshots = await Promise.all(
+      memberIds.map((id) => db.collection('users').doc(id).get())
     );
 
-    const userSnapShots = await Promise.all(userPromises);
-    const members = userSnapShots.flatMap((snapshot) =>
-      snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-        createdAt: doc.data().createdAt.toDate().toISOString(),
-      }))
-    );
+    const members = userSnapshots.map((doc) => ({
+      id: doc.id,
+      nickname: doc.data()?.nickname || '',
+      avatar: doc.data()?.avatar || '',
+    }));
 
+    // Obtener todas las temporadas activas
+    const seasonsSnapshot = await db
+      .collection('communities')
+      .doc(communityId)
+      .collection('seasons')
+      .get();
+
+    const seasons = seasonsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      name: doc.data().name,
+    }));
+
+    // Obtener todas las actividades activas y sus nombres de temporada
+    const activitiesSnapshot = await db
+      .collection('communities')
+      .doc(communityId)
+      .collection('activities')
+      //.where('status', '==', 'active')
+      .orderBy('createdAt', 'desc')
+      .limit(5)
+      .get();
+
+    const activities = await Promise.all(
+      activitiesSnapshot.docs.map(async (doc) => {
+        const activity = doc.data();
+        const seasonName =
+          activity.seasonId &&
+          seasons.find((s) => s.id === activity.seasonId)?.name;
+        return {
+          id: doc.id,
+          name: activity.name,
+          type: activity.type,
+          seasonName: seasonName || 'Sin temporada',
+        };
+      })
+    );
     return {
       ...communityData,
       members,
+      seasons,
+      activities,
     };
   } catch (error) {
     console.error('Error al obtener los detalles de la comunidad:', error);
-    throw new Error('No se pudieron obtener los detalles de la comunidad.');
+    throw error;
   }
 });

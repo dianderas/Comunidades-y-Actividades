@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev:frontend": "npm run dev --prefix frontend",
-    "dev:backend": "firebase emulators:start --config=backend/firebase.json --import=backend/emulator-data --export-on-exit=backend/emulator-data --project=ekisde-fe4e1 --only functions,firestore,auth"
+    "dev:backend": "firebase emulators:start --config=backend/firebase.json --import=backend/emulator-data --export-on-exit=backend/emulator-data --project=ekisde-fe4e1 --only functions,firestore,auth,database"
   },
   "dependencies": {
     "@mui/x-date-pickers": "^7.23.3",

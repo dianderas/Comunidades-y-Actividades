@@ -19,6 +19,9 @@
   "storage": {
     "rules": "storage.rules"
   },
+  "database": {
+    "rules": "database.rules.json"
+  },
   "emulators": {
     "auth": {
       "port": 9099
@@ -31,7 +34,8 @@
       "rules": "firestore.rules"
     },
     "database": {
-      "port": 9000
+      "port": 9000,
+      "rules": "database.rules.json"
     },
     "storage": {
       "port": 9199
@@ -39,9 +43,9 @@
     "ui": {
       "enabled": true
     },
-    "singleProjectMode": true
-  },
-  "database": {
-    "rules": "database.rules.json"
+    "singleProjectMode": true,
+    "dataconnect": {
+      "port": 9399
+    }
   }
 }

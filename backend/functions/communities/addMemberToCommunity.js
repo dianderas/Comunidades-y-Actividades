@@ -6,19 +6,21 @@ const db = admin.firestore();
 
 exports.addMemberToCommunity = https.onCall(async ({ data, auth }) => {
   const { communityId, userId, role = 'member' } = data;
-
-  if (!auth?.uid) {
-    throw new https.HttpsError(
-      'unauthenticated',
-      'El usuario no está autenticado.'
-    );
-  }
-
-  if (!communityId || !userId) {
-    throw new https.HttpsError('invalid-argument', 'Faltan datos requeridos.');
-  }
-
   try {
+    if (!auth?.uid) {
+      throw new https.HttpsError(
+        'unauthenticated',
+        'El usuario no está autenticado.'
+      );
+    }
+
+    if (!communityId || !userId) {
+      throw new https.HttpsError(
+        'invalid-argument',
+        'Faltan datos requeridos.'
+      );
+    }
+
     const existingMemberRef = db
       .collection('community_members')
       .doc(`${communityId}_${userId}`);
@@ -50,6 +52,7 @@ exports.addMemberToCommunity = https.onCall(async ({ data, auth }) => {
     batch.set(memberSubRef, {
       userId,
       role,
+      nickanme,
       createdAt: FieldValue.serverTimestamp(),
     });
 

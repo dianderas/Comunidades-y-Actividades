@@ -10,6 +10,7 @@ import {
 } from '../../../../stores/zubstand';
 import { InviteLink } from './contentModals/InviteLink/InviteLink';
 import { useParams } from 'react-router-dom';
+import { CreteSeasonModal } from './contentModals/CreateSeasonModal/CreateSeasonModal';
 
 export const ModalManager = () => {
   const { communityId } = useParams();
@@ -33,6 +34,9 @@ export const ModalManager = () => {
       break;
     case 'inviteLink':
       modalContent = <InviteLink token={communityDetails?.inviteToken} />;
+      break;
+    case 'createSeason':
+      modalContent = <CreteSeasonModal />;
       break;
     default:
       modalContent = <Typography>No hay contenido disponible.</Typography>;

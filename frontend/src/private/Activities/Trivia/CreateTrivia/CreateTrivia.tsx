@@ -1,28 +1,79 @@
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from '@mui/material';
-
-import { useCreateTriviaStore } from '../../../../stores/zubstand';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Backdrop, EditableLabel } from '../../../../components';
+import { useApi } from '../../../../hooks';
+import {
+  createOrUpdateActivity,
+  getFullTrivia,
+} from '../../../../services/firebase/activity';
+import {
+  useCommunityDetailsStore,
+  useCreateTriviaStore,
+} from '../../../../stores/zubstand';
 import { AnswerText, QuestionItem } from './components';
 import './CreateTrivia.css';
-import { useEffect } from 'react';
+import { createTriviaRoom } from '../../../../services/firebase/room';
 
 export const CreateTrivia = () => {
+  const { communityId, activityId } = useParams();
+  const [activityTile, setActivityTitle] = useState('Default title :)');
+  const navigate = useNavigate();
+
+  const { addActivity, updateActivityName } = useCommunityDetailsStore();
+
   const {
     questions,
     activeQuestionId,
+    setTrivia,
     addQuestion,
     removeQuestion,
     duplicateQuestion,
     setActiveQuestion,
     updateQuestion,
   } = useCreateTriviaStore();
+
+  const {
+    data: createOrUpdateResponse,
+    loading,
+    error,
+    execute,
+  } = useApi({
+    request: createOrUpdateActivity,
+  });
+
+  const {
+    data: fetchResponse,
+    loading: fetchLoading,
+    error: fetchError,
+    execute: fetchTrivia,
+  } = useApi({ request: getFullTrivia });
+
+  const {
+    data: createRoomResponse,
+    loading: createRoomLoading,
+    error: createRoomError,
+    execute: createRoom,
+  } = useApi({
+    request: createTriviaRoom,
+  });
+
+  useEffect(() => {
+    if (activityId && communityId) {
+      fetchTrivia({ activityId, communityId });
+    }
+  }, [activityId, communityId, fetchTrivia]);
 
   // Nota: el removeQuestion esta causando una desincronizacion temporal en activeQuestionId, con esto lo aseguramos.
   useEffect(() => {
@@ -31,25 +82,87 @@ export const CreateTrivia = () => {
     }
   }, [activeQuestionId, questions, setActiveQuestion]);
 
+  useEffect(() => {
+    if (createOrUpdateResponse) {
+      const { data } = createOrUpdateResponse;
+      setActivityTitle(data.name);
+      if (data.action === 'created') {
+        const { activityId: id, name, type, seasonName } = data;
+        addActivity(communityId!, { id, name, seasonName, type });
+      } else {
+        // 'updated'
+        updateActivityName(communityId!, activityId!, data.name);
+      }
+    }
+  }, [
+    activityId,
+    addActivity,
+    communityId,
+    createOrUpdateResponse,
+    updateActivityName,
+  ]);
+
+  useEffect(() => {
+    if (fetchResponse?.data) {
+      setActivityTitle(fetchResponse.data.activity.name);
+      setTrivia(fetchResponse.data);
+    }
+
+    if (createRoomResponse) {
+      const { data } = createRoomResponse;
+
+      navigate(`/community/${communityId}/activity/room/${data.roomId}`);
+    }
+  }, [
+    communityId,
+    fetchResponse?.data,
+    navigate,
+    setTrivia,
+    createRoomResponse,
+  ]);
+
   const activeQuestion = questions.find(
     (question) => question.id === activeQuestionId
   );
 
-  const handleSave = () => {
-    console.log(questions);
+  const handleSave = async () => {
+    await execute({
+      activityId,
+      name: activityTile,
+      communityId,
+      details: questions,
+      type: 'trivia',
+    });
   };
+
+  const handleStatTrivia = async () => {
+    await createRoom({ communityId, activityId });
+  };
+
+  const anyError = error || fetchError || createRoomError;
 
   return (
     <>
+      {(loading || fetchLoading || createRoomLoading) && <Backdrop />}
       <Box className="question-top-bar">
-        <Button
-          onClick={handleSave}
-          className="btn-save"
-          variant="contained"
-          size="medium"
-        >
-          Save
-        </Button>
+        <EditableLabel
+          defaultValue={activityTile}
+          onSave={(value) => setActivityTitle(value)}
+        />
+        <div className="btn-actions">
+          <Button onClick={handleStatTrivia} variant="outlined" size="medium">
+            Start Trivia
+          </Button>
+          <Button onClick={handleSave} variant="contained" size="medium">
+            Save
+          </Button>
+          <IconButton
+            aria-label="delete"
+            onClick={() => navigate(`/community/${communityId}`)}
+          >
+            <CloseIcon />
+          </IconButton>
+        </div>
       </Box>
       <Box className="question-editor">
         <Box className="question-nav">
@@ -69,6 +182,11 @@ export const CreateTrivia = () => {
           </Button>
         </Box>
         <Box className="question-inputs">
+          {anyError && (
+            <Typography variant="body2" color="error" sx={{ my: 2 }}>
+              {anyError.message}
+            </Typography>
+          )}
           {activeQuestion && (
             <>
               <FormControl className="question-title">

@@ -78,7 +78,7 @@ export const CommunityDetails = ({ communityId }: Props) => {
       </div>
       <div className="dashboard-content dashboard-paper">
         <TopMembersCard members={communityDetails.members} />
-        <LastActivitiesCard activities={[{ a: '' }]} />
+        <LastActivitiesCard activities={communityDetails.activities} />
       </div>
       <div className="dashboard-members dashboard-paper">Columna D</div>
     </>

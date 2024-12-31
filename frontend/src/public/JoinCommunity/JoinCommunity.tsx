@@ -13,12 +13,12 @@ import AdbIcon from '@mui/icons-material/Adb';
 import './JoinCommunity.css';
 import {
   addMemberToCommunity,
-  CommunitytoInviteResponse,
   getCommunityByInviteToken,
 } from '../../services/firebase';
 import { useApi } from '../../hooks';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../../stores/zubstand/authStore';
+import { CommunitytoInviteResponse } from '../../services/firebase/dtos';
 
 export const JoinCommunity = () => {
   const { user } = useAuthStore();

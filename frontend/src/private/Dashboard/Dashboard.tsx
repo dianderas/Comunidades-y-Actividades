@@ -34,7 +34,6 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (data && storedCommunities.length === 0) {
-      console.log(data);
       setCommunities(data);
       if (data.length === 0) {
         return;

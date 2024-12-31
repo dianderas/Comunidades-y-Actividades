@@ -1,5 +1,6 @@
 import EditIcon from '@mui/icons-material/Edit';
 import EventIcon from '@mui/icons-material/Event';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import SettingsIcon from '@mui/icons-material/Settings';
 import UpgradeIcon from '@mui/icons-material/Upgrade';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -33,8 +34,8 @@ export const CommunityOptions = ({ name }: Props) => {
     setAnchorEl(null);
   };
 
-  const handleOpenInviteLinkModal = () => {
-    openModal('inviteLink');
+  const handleOpenModal = (modalName: string) => {
+    openModal(modalName);
     setAnchorEl(null);
   };
 
@@ -52,25 +53,31 @@ export const CommunityOptions = ({ name }: Props) => {
           </ListItemIcon>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleOpenInviteLinkModal}>
+        <MenuItem onClick={() => handleOpenModal('inviteLink')}>
           <ListItemText>Invitar gente</ListItemText>
           <ListItemIcon className="option-menu-item-icon">
             <PersonAddIcon />
           </ListItemIcon>
         </MenuItem>
+        <MenuItem onClick={() => handleOpenModal('createSeason')}>
+          <ListItemText>Crear temporada</ListItemText>
+          <ListItemIcon className="option-menu-item-icon">
+            <EventIcon />
+          </ListItemIcon>
+        </MenuItem>
+        <MenuItem onClick={() => handleOpenModal('selectActivity')}>
+          <ListItemText>Crear Actividad</ListItemText>
+          <ListItemIcon className="option-menu-item-icon">
+            <SportsEsportsIcon />
+          </ListItemIcon>
+        </MenuItem>
+        <Divider />
         <MenuItem onClick={handleClose}>
           <ListItemText>Ajustes del servidor</ListItemText>
           <ListItemIcon className="option-menu-item-icon">
             <SettingsIcon />
           </ListItemIcon>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemText>Crear Evento</ListItemText>
-          <ListItemIcon className="option-menu-item-icon">
-            <EventIcon />
-          </ListItemIcon>
-        </MenuItem>
-        <Divider />
         <MenuItem onClick={handleClose}>
           <ListItemText>Editar perfil de comunidad</ListItemText>
           <ListItemIcon className="option-menu-item-icon">

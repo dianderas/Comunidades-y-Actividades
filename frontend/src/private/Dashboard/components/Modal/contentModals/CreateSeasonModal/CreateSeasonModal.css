@@ -1,0 +1,33 @@
+.season-tabs {
+  margin-bottom: 16px;
+}
+
+.season-create {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.season-input {
+  margin-bottom: 8px;
+}
+
+.season-create-button {
+  align-self: flex-end;
+}
+.season-manage {
+  margin-top: 16px;
+}
+
+.season-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 8px 0;
+}
+
+.season-toggle-button {
+  min-width: 120px;
+}

@@ -1,13 +1,14 @@
 import { Button, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useModalStore } from '../../../../../stores/zubstand';
 
 export const SelectActivityModal = () => {
+  const { communityId } = useParams();
   const { closeModal } = useModalStore();
   const navigate = useNavigate();
   const handleNavigate = (path: string) => {
     closeModal();
-    navigate(path, { replace: true });
+    navigate(path, { replace: false });
   };
 
   return (
@@ -17,9 +18,11 @@ export const SelectActivityModal = () => {
         variant="contained"
         color="primary"
         sx={{ mt: 2 }}
-        onClick={() => handleNavigate('/actividad-1')}
+        onClick={() =>
+          handleNavigate(`/community/${communityId}/activity/trivia`)
+        }
       >
-        Actividad 1
+        Trivia
       </Button>
       <Button
         variant="contained"
@@ -27,7 +30,7 @@ export const SelectActivityModal = () => {
         sx={{ mt: 2, ml: 2 }}
         onClick={() => handleNavigate('/actividad-2')}
       >
-        Actividad 2
+        Beets
       </Button>
     </>
   );

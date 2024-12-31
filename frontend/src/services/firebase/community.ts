@@ -2,53 +2,14 @@ import { collection, documentId, getDocs, query, where } from "firebase/firestor
 import { httpsCallable } from 'firebase/functions';
 import { Community } from "../../stores/zubstand";
 import { db, functions } from "./config";
+import {
+  AddMemberRequest, AddMemberResponse, CommunityDetailsRequest, CommunityDetailsResponse,
+  CommunitytoInviteRequest, CommunitytoInviteResponse, CreateCommunityRequest, CreateSeasonRequest,
+  CreateSeasonResponse,
+  ToggleSeasonStatusRequest,
+  ToggleSeasonStatusResponse
+} from "./dtos";
 
-interface ComuniityMember {
-  id: string;
-  nickname: string;
-  avatar: string;
-  email: string;
-  createdAt: string;
-}
-
-interface CommunityDetailsResponse {
-  communityId: string;
-  createdAt: string;
-  description: string;
-  settings: { privacy: string }
-  inviteToken: string;
-  members: ComuniityMember[];
-}
-
-interface CommunityDetailsRequest {
-  communityId: string;
-}
-
-interface CommunitytoInviteRequest {
-  token: string;
-}
-
-export interface CommunitytoInviteResponse {
-  id: string;
-  name: string;
-  avatar: string;
-}
-
-interface CreateCommunityRequest {
-  name: string;
-  avatar: string;
-  ownerId?: string;
-}
-
-interface addMemberRequest {
-  communityId: string;
-  userId: string;
-}
-
-interface addMemberResponse {
-  success: boolean;
-  message: string;
-}
 
 export const createCommunity = async ({
   name,
@@ -109,9 +70,23 @@ export const getCommunityByInviteToken = async (token: string) => {
   return await fnFetchCommunityByInviteToken({ token });
 }
 
-export const addMemberToCommunity = async ({ communityId, userId }: addMemberRequest) => {
+export const addMemberToCommunity = async ({ communityId, userId }: AddMemberRequest) => {
   const fnAddMemberToCommunity =
-    httpsCallable<addMemberRequest, addMemberResponse>(functions, 'addMemberToCommunity');
+    httpsCallable<AddMemberRequest, AddMemberResponse>(functions, 'addMemberToCommunity');
 
-  return await fnAddMemberToCommunity({ communityId, userId })
+  return await fnAddMemberToCommunity({ communityId, userId });
+}
+
+export const createSeason = async ({ communityId, name }: CreateSeasonRequest) => {
+  const fnCreateSeason =
+    httpsCallable<CreateSeasonRequest, CreateSeasonResponse>(functions, 'createSeason');
+
+  return await fnCreateSeason({ communityId, name });
+}
+
+export const toggleSeasonStatus = async ({ communityId, seasonId }: ToggleSeasonStatusRequest) => {
+  const fnToggleSeasonStatus =
+    httpsCallable<ToggleSeasonStatusRequest, ToggleSeasonStatusResponse>(functions, 'toggleSeasonStatus');
+
+  return await fnToggleSeasonStatus({ communityId, seasonId });
 }

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { GetFullTriviaResponse } from "../../services/firebase/dtos/activity";
 
 interface QuestionOption {
   value: string;
@@ -17,6 +18,7 @@ interface Question {
 interface CreateTriviaStore {
   questions: Question[];
   activeQuestionId: string | null;
+  setTrivia: (triviaData: GetFullTriviaResponse) => void;
   addQuestion: () => void;
   removeQuestion: (questionId: string) => void;
   duplicateQuestion: (questionId: string) => void;
@@ -24,20 +26,42 @@ interface CreateTriviaStore {
   updateQuestion: (questionId: string, updatedQuestion: Partial<Question>) => void;
   addOptionToToQuestion: (questionId: string, option: QuestionOption) => void;
   removeOptionFromQuestion: (questionId: string, optionIndex: number) => void;
+  resetStore: () => void;
 }
 
+const defaultQuestions: Question[] = [
+  {
+    id: 'defaultQuizId',
+    question: '',
+    type: 'quiz',
+    timeLimit: 20,
+    points: 'standard',
+    options: [{ value: '' }, { value: '' }, { value: '' }, { value: '' }],
+  },
+];
+
+const defaultFirstQuestionId = 'firstDefaultQuizId';
+
 export const useCreateTriviaStore = create<CreateTriviaStore>((set) => ({
-  questions: [
-    {
-      id: 'defaultQuizId',
-      question: '',
-      type: 'quiz',
-      timeLimit: 20,
-      points: 'standard',
-      options: [{ value: '' }, { value: '' }, { value: '' }, { value: '' }],
-    },
-  ],
-  activeQuestionId: 'defaultQuizId',
+  questions: defaultQuestions,
+  activeQuestionId: defaultFirstQuestionId,
+
+  setTrivia: (triviaData) => {
+    const formattedQuestions = triviaData.details.questions.map((question) => ({
+      id: question.id,
+      question: question.question,
+      type: question.type,
+      timeLimit: question.timeLimit,
+      points: question.points,
+      options: question.options,
+      createdAt: question.createdAt,
+    }));
+
+    set(() => ({
+      questions: formattedQuestions as Question[],
+      activeQuestionId: formattedQuestions.length > 0 ? formattedQuestions[0].id : null,
+    }));
+  },
 
   addQuestion: () => {
     const newQuestion: Question = {
@@ -104,5 +128,9 @@ export const useCreateTriviaStore = create<CreateTriviaStore>((set) => ({
           ? { ...question, options: question.options.filter((_, index) => index !== optionIndex) }
           : question)
     }))
-  }
+  },
+  resetStore: () => set({
+    questions: defaultQuestions,
+    activeQuestionId: defaultFirstQuestionId,
+  })
 }))

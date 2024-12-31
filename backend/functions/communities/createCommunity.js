@@ -50,6 +50,7 @@ exports.createCommunity = https.onCall(async ({ data, auth }) => {
     batch.set(membersRef, {
       createdAt: FieldValue.serverTimestamp(),
       role: 'owner',
+      userId,
     });
 
     const communityMemberRef = db
