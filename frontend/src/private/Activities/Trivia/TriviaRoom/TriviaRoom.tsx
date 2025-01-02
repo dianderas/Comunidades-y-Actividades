@@ -22,6 +22,7 @@ import {
 import { useAuthStore } from '../../../../stores/zubstand/authStore';
 import { RoomData } from '../../../../services/firebase/dtos';
 import './TriviaRoom.css';
+import { Podium, QuestionResults } from './components';
 
 const defaultRoomData: RoomData = {
   id: '',
@@ -43,15 +44,11 @@ export const TriviaRoom = () => {
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const { user } = useAuthStore();
-  const [showQuestionResults, setShowQuestionResults] = useState(false);
+  //const [showQuestionResults, setShowQuestionResults] = useState(false);
 
   const isOwner = roomData?.ownerId === user?.uid;
   const isPlayerInRoom =
     roomData?.players && user && user.uid in roomData.players;
-
-  if (!roomId) {
-    navigate(`/community/${communityId}`);
-  }
 
   const {
     execute: startTriviaExecute,
@@ -79,6 +76,7 @@ export const TriviaRoom = () => {
 
   const {
     execute: endTriviaExecute,
+    data: endTriviaResponse,
     error: endTriviaError,
     loading: endTriviaLoading,
   } = useApi({
@@ -92,6 +90,12 @@ export const TriviaRoom = () => {
   } = useApi({
     request: joinTriviaRoom,
   });
+
+  useEffect(() => {
+    if (endTriviaResponse) {
+      navigate(`/community/${communityId}`);
+    }
+  }, [communityId, endTriviaResponse, navigate]);
 
   useEffect(() => {
     if (!roomId) return;
@@ -115,7 +119,7 @@ export const TriviaRoom = () => {
 
           setRemainingTime(timeRemaining);
           setSelectedOption(null);
-          setShowQuestionResults(false);
+          //setShowQuestionResults(false);
         }
       } else {
         setRoomData(defaultRoomData);
@@ -136,7 +140,7 @@ export const TriviaRoom = () => {
     );
 
     if (remainingTime === 1) {
-      setShowQuestionResults(true); // Mostrar resultados al acabar el tiempo
+      //setShowQuestionResults(true);
     }
 
     return () => clearTimeout(timer);
@@ -169,36 +173,6 @@ export const TriviaRoom = () => {
   const handleJoinTriviaRoom = async () => {
     await joinTriviaRoomExecute({ roomId, nickname: user?.email });
   };
-
-  const renderQuestionResults = () => (
-    <Box>
-      <Typography variant="h6">Resultados de la pregunta</Typography>
-      {roomData?.currentQuestionResults &&
-        Object.entries(roomData.currentQuestionResults).map(
-          ([option, count]) => (
-            <Typography key={option}>
-              {option}: {count} respuestas
-            </Typography>
-          )
-        )}
-    </Box>
-  );
-
-  const renderFinalResults = () => (
-    <Box>
-      <Typography variant="h4">Resultados Finales</Typography>
-      {Object.entries(roomData?.results || {}).map(([playerId, points]) => (
-        <Typography key={playerId}>
-          {playerId}: {points} puntos
-        </Typography>
-      ))}
-      {isOwner && (
-        <Button variant="contained" onClick={handleEndTrivia}>
-          Finalizar trivia
-        </Button>
-      )}
-    </Box>
-  );
 
   const renderPlayers = () => {
     if (!roomData?.players) {
@@ -255,13 +229,24 @@ export const TriviaRoom = () => {
               Start trivia
             </Button>
           )}
-          {isOwner && remainingTime === 0 && (
+          {isOwner &&
+            remainingTime === 0 &&
+            roomData?.status === 'in_progress' && (
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={handleNextQuestion}
+              >
+                Siguiente Pregunta
+              </Button>
+            )}
+          {isOwner && roomData?.status === 'finished' && (
             <Button
               variant="outlined"
               color="inherit"
-              onClick={handleNextQuestion}
+              onClick={handleEndTrivia}
             >
-              Siguiente Pregunta
+              Finalizar trivia
             </Button>
           )}
         </Toolbar>
@@ -284,7 +269,7 @@ export const TriviaRoom = () => {
           {roomData?.status === 'waiting' && (
             <Box>
               <Typography variant="h4">
-                Esperando a host inicie partida...
+                Esperando que host inicie partida...
               </Typography>
             </Box>
           )}
@@ -298,6 +283,7 @@ export const TriviaRoom = () => {
                 <Typography>Tiempo restante:</Typography>
                 <Typography variant="h5">{remainingTime}s</Typography>
               </Box>
+              {remainingTime === 0 && <QuestionResults roomData={roomData} />}
               <Box className="trivia-room-inprogress-inprogress">
                 {roomData.currentQuestion.options.map((option, index) => (
                   <Button
@@ -322,11 +308,11 @@ export const TriviaRoom = () => {
                   Enviar Respuesta
                 </Button>
               )}
-
-              {showQuestionResults && renderQuestionResults()}
             </Box>
           )}
-          {roomData?.status === 'finished' && renderFinalResults()}
+          {roomData?.status === 'finished' && roomData.players && (
+            <Podium players={roomData.players} />
+          )}
         </Box>
       </Box>
     </>

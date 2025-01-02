@@ -60,8 +60,10 @@ export interface RoomData {
   questions: Question[];
   answers: Record<string, Record<string, string>>;
   results: Record<string, number>;
-  players?: Record<string, { nickname: string; score: number }>;
+  players?: PlayersRoom;
 }
+
+export type PlayersRoom = Record<string, { nickname: string; score: number }>;
 
 interface Question {
   id: string;

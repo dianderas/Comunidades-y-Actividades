@@ -39,7 +39,7 @@ exports.endTrivia = https.onCall(async ({ data, auth }) => {
     }));
 
     await db.collection('community_rankings').add({
-      roomId,
+      activityId: roomId,
       communityId: roomData.communityId,
       results,
       createdAt: FieldValue.serverTimestamp(),

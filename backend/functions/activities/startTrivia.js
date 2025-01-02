@@ -35,6 +35,7 @@ exports.startTrivia = https.onCall(async ({ data, auth }) => {
       status: 'in_progress',
       currentQuestion: firstQuestion,
       currentQuestionStartTime: startTime,
+      currentQuestionResults: transformToScores(firstQuestion),
       results: {},
     });
 
@@ -44,3 +45,10 @@ exports.startTrivia = https.onCall(async ({ data, auth }) => {
     throw error;
   }
 });
+
+const transformToScores = (obj) => {
+  return obj.options.reduce((acc, option) => {
+    acc[option.value] = 0;
+    return acc;
+  }, {});
+};
