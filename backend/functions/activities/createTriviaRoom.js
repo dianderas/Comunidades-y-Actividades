@@ -26,6 +26,13 @@ exports.createTriviaRoom = https.onCall(async ({ data, auth }) => {
       );
     }
 
+    const activityDoc = await db
+      .collection('communities')
+      .doc(communityId)
+      .collection('activities')
+      .doc(activityId)
+      .get();
+
     const triviaDetailsDoc = await db
       .collection('activity_details')
       .doc(activityId)
@@ -38,9 +45,10 @@ exports.createTriviaRoom = https.onCall(async ({ data, auth }) => {
       );
     }
 
-    const roomRef = rtdb.ref(`rooms/${activityId}`);
+    const roomId = activityId;
+    const roomRef = rtdb.ref(`rooms/${roomId}`);
     await roomRef.set({
-      activityId,
+      name: activityDoc.data().name,
       communityId,
       ownerId: userId,
       status: 'waiting',
@@ -52,7 +60,7 @@ exports.createTriviaRoom = https.onCall(async ({ data, auth }) => {
 
     monitorRoomPlayers(roomId);
 
-    return { roomId: activityId };
+    return { roomId };
   } catch (error) {
     throw error;
   }

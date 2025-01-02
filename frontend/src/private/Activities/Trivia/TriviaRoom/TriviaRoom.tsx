@@ -1,4 +1,11 @@
-import { Box, Button, Typography } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Button,
+  Divider,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import { onValue } from 'firebase/database';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,27 +20,12 @@ import {
   submitAnswer,
 } from '../../../../services/firebase';
 import { useAuthStore } from '../../../../stores/zubstand/authStore';
-
-interface Question {
-  id: string;
-  question: string;
-  options: { value: string }[];
-  timeLimit: number;
-}
-
-interface RoomData {
-  status: 'waiting' | 'in_progress' | 'finished';
-  currentQuestion: Question | null;
-  currentQuestionStartTime: number | null;
-  currentQuestionResults: Record<string, number>;
-  ownerId: string;
-  questions: Question[];
-  answers: Record<string, Record<string, string>>;
-  results: Record<string, number>;
-  players?: Record<string, { nickname: string; score: number }>;
-}
+import { RoomData } from '../../../../services/firebase/dtos';
+import './TriviaRoom.css';
 
 const defaultRoomData: RoomData = {
+  id: '',
+  name: '',
   status: 'waiting',
   currentQuestion: null,
   currentQuestionStartTime: null,
@@ -110,7 +102,6 @@ export const TriviaRoom = () => {
       const data = snapshot.val();
 
       if (data) {
-        console.log('data', data);
         setRoomData(data);
 
         if (data.currentQuestion) {
@@ -240,72 +231,104 @@ export const TriviaRoom = () => {
   }
 
   return (
-    <Box>
-      {(!roomData ||
-        startTriviaLoading ||
-        submitAnswerLoading ||
-        endTriviaLoading ||
-        joinTriviaRoomLoading ||
-        nextQuestionLoading) && <Backdrop />}
-      {anyError && (
-        <Typography variant="body2" color="error" sx={{ my: 2 }}>
-          {anyError.message}
-        </Typography>
-      )}
-
-      {roomData?.status === 'waiting' && (
-        <Box>
-          <Typography>Esperando a jugadores...</Typography>
-          {renderPlayers()}
-          {isOwner && (
-            <Button variant="contained" onClick={handleStartTrivia}>
-              Start trivia
-            </Button>
-          )}
+    <>
+      <AppBar position="static" elevation={0}>
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            {roomData?.name}
+          </Typography>
           {!isPlayerInRoom && !isOwner && (
-            <Button variant="contained" onClick={handleJoinTriviaRoom}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={handleJoinTriviaRoom}
+            >
               Join Trivia
             </Button>
           )}
-        </Box>
-      )}
-
-      {roomData?.status === 'in_progress' && roomData.currentQuestion && (
-        <Box>
-          <Typography variant="h5">
-            {roomData.currentQuestion.question}
-          </Typography>
-          {roomData.currentQuestion.options.map((option, index) => (
+          {roomData?.status === 'waiting' && isOwner && (
             <Button
-              key={index}
-              variant={
-                selectedOption === option.value ? 'contained' : 'outlined'
-              }
-              onClick={() => setSelectedOption(option.value)}
-              disabled={!!selectedOption || remainingTime === 0}
+              variant="outlined"
+              color="inherit"
+              onClick={handleStartTrivia}
             >
-              {option.value}
-            </Button>
-          ))}
-          <Typography>Tiempo restante: {remainingTime}s</Typography>
-          {!isOwner && (
-            <Button
-              variant="contained"
-              onClick={handleAnswer}
-              disabled={!selectedOption}
-            >
-              Enviar Respuesta
+              Start trivia
             </Button>
           )}
           {isOwner && remainingTime === 0 && (
-            <Button variant="contained" onClick={handleNextQuestion}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={handleNextQuestion}
+            >
               Siguiente Pregunta
             </Button>
           )}
-          {showQuestionResults && renderQuestionResults()}
+        </Toolbar>
+      </AppBar>
+      <Box className="trivia-room">
+        <Box className="trivia-room-aside">{renderPlayers()}</Box>
+        <Divider orientation="vertical" />
+        <Box className="trivia-room-content">
+          {(!roomData ||
+            startTriviaLoading ||
+            submitAnswerLoading ||
+            endTriviaLoading ||
+            joinTriviaRoomLoading ||
+            nextQuestionLoading) && <Backdrop />}
+          {anyError && (
+            <Typography variant="body2" color="error" sx={{ my: 2 }}>
+              {anyError.message}
+            </Typography>
+          )}
+          {roomData?.status === 'waiting' && (
+            <Box>
+              <Typography variant="h4">
+                Esperando a host inicie partida...
+              </Typography>
+            </Box>
+          )}
+
+          {roomData?.status === 'in_progress' && roomData.currentQuestion && (
+            <Box className="trivia-room-inprogress">
+              <Typography variant="h5">
+                {roomData.currentQuestion.question}
+              </Typography>
+              <Box>
+                <Typography>Tiempo restante:</Typography>
+                <Typography variant="h5">{remainingTime}s</Typography>
+              </Box>
+              <Box className="trivia-room-inprogress-inprogress">
+                {roomData.currentQuestion.options.map((option, index) => (
+                  <Button
+                    key={index}
+                    variant={
+                      selectedOption === option.value ? 'contained' : 'outlined'
+                    }
+                    onClick={() => setSelectedOption(option.value)}
+                    disabled={!!selectedOption || remainingTime === 0}
+                  >
+                    {option.value}
+                  </Button>
+                ))}
+              </Box>
+
+              {!isOwner && (
+                <Button
+                  variant="contained"
+                  onClick={handleAnswer}
+                  disabled={!selectedOption}
+                >
+                  Enviar Respuesta
+                </Button>
+              )}
+
+              {showQuestionResults && renderQuestionResults()}
+            </Box>
+          )}
+          {roomData?.status === 'finished' && renderFinalResults()}
         </Box>
-      )}
-      {roomData?.status === 'finished' && renderFinalResults()}
-    </Box>
+      </Box>
+    </>
   );
 };

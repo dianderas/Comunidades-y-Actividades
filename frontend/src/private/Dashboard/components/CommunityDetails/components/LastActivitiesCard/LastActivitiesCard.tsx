@@ -23,7 +23,7 @@ export const LastActivitiesCard = ({ activities }: Props) => {
   const navigate = useNavigate();
   const { communityId } = useParams();
   return (
-    <Box sx={{ minWidth: 275, mt: 4, width: '50%' }}>
+    <Box sx={{ minWidth: 275, width: '50%' }}>
       <Card variant="outlined">
         <CardContent>
           <Typography

@@ -1,16 +1,14 @@
-import EditIcon from '@mui/icons-material/Edit';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import { KeyboardEvent, useEffect, useState } from 'react';
+import { Box, IconButton, MenuItem, Select, Typography } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 
-interface Props {
+type Props = {
   defaultValue: string;
+  options: { value: string; label: string }[];
   onSave?: (value: string) => void;
-}
+};
 
-export const EditableLabel = ({ defaultValue, onSave }: Props) => {
+export const EditableSelect = ({ defaultValue, options, onSave }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(defaultValue);
 
@@ -25,7 +23,9 @@ export const EditableLabel = ({ defaultValue, onSave }: Props) => {
     }
   };
 
-  const handleKeyDown = (event: KeyboardEvent) => {
+  const handleKeyDown = (
+    event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     if (event.key === 'Enter' || event.key === 'Escape') {
       setIsEditing(false);
       if (onSave) {
@@ -37,18 +37,21 @@ export const EditableLabel = ({ defaultValue, onSave }: Props) => {
   return (
     <Box display="flex" alignItems="center" gap={1}>
       {isEditing ? (
-        <TextField
+        <Select
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          variant="outlined"
-          size="small"
           autoFocus
-          InputProps={{
-            style: { fontSize: '1rem', fontWeight: 600 },
-          }}
-        />
+          size="small"
+          sx={{ fontSize: '1rem', fontWeight: 600 }}
+        >
+          {options.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
       ) : (
         <Box
           display="flex"
@@ -58,7 +61,7 @@ export const EditableLabel = ({ defaultValue, onSave }: Props) => {
           style={{ cursor: 'pointer' }}
         >
           <Typography variant="body1" fontWeight="bold">
-            {value}
+            {options.find((o) => o.value === value)?.label}
           </Typography>
           <IconButton size="small">
             <EditIcon fontSize="small" />

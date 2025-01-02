@@ -1,7 +1,12 @@
-require('dotenv').config();
 const admin = require('firebase-admin');
 
-admin.initializeApp();
+const isDevelopment = process.env.FUNCTIONS_EMULATOR === 'true';
+
+admin.initializeApp({
+  databaseURL: isDevelopment
+    ? 'http://127.0.0.1:9000?ns=ekisde-fe4e1'
+    : 'https://ekisde-fe4e1.firebaseio.com',
+});
 
 const communities = require('./communities');
 const activities = require('./activities');

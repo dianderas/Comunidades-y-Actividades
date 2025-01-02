@@ -38,6 +38,7 @@ interface CommunityDetailsStore {
   updateSeasonStatus: (communityId: string, seasonName: string, newStatus: string) => void;
   addActivity: (communityId: string, activity: BaseInfoActivity) => void;
   updateActivityName: (communityId: string, activityId: string, newName: string) => void;
+  getSeasons: (id: string) => Season[] | undefined;
 }
 
 export const useCommunityDetailsStore = create<CommunityDetailsStore>((set, get) => ({
@@ -121,5 +122,10 @@ export const useCommunityDetailsStore = create<CommunityDetailsStore>((set, get)
         },
       };
     });
+  },
+  getSeasons: (id) => {
+    const state = get();
+
+    return state.details[id] ? state.details[id].seasons : undefined;
   },
 }));

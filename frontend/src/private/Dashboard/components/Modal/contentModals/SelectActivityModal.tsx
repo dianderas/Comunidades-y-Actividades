@@ -1,14 +1,22 @@
 import { Button, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useModalStore } from '../../../../../stores/zubstand';
+import {
+  useCreateTriviaStore,
+  useModalStore,
+} from '../../../../../stores/zubstand';
 
 export const SelectActivityModal = () => {
   const { communityId } = useParams();
   const { closeModal } = useModalStore();
+  const { resetStore: resetCreateTriviaStore } = useCreateTriviaStore();
   const navigate = useNavigate();
-  const handleNavigate = (path: string) => {
+
+  const handleNavigate = (type: string) => {
     closeModal();
-    navigate(path, { replace: false });
+    if (type === 'trivia') {
+      resetCreateTriviaStore();
+      navigate(`/community/${communityId}/activity/trivia`, { replace: false });
+    }
   };
 
   return (
@@ -18,9 +26,7 @@ export const SelectActivityModal = () => {
         variant="contained"
         color="primary"
         sx={{ mt: 2 }}
-        onClick={() =>
-          handleNavigate(`/community/${communityId}/activity/trivia`)
-        }
+        onClick={() => handleNavigate('trivia')}
       >
         Trivia
       </Button>

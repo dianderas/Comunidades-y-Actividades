@@ -7,6 +7,12 @@
   padding: 0 24px;
 }
 
+.question-top-bar-input {
+  display: flex;
+  align-items: center;
+  column-gap: 4px;
+}
+
 .btn-actions {
   margin-left: auto !important;
   display: flex;

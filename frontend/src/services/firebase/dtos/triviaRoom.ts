@@ -49,3 +49,24 @@ export interface EndTriviaResponse {
   message: string;
 }
 
+export interface RoomData {
+  id: string;
+  name: string;
+  status: 'waiting' | 'in_progress' | 'finished';
+  currentQuestion: Question | null;
+  currentQuestionStartTime: number | null;
+  currentQuestionResults: Record<string, number>;
+  ownerId: string;
+  questions: Question[];
+  answers: Record<string, Record<string, string>>;
+  results: Record<string, number>;
+  players?: Record<string, { nickname: string; score: number }>;
+}
+
+interface Question {
+  id: string;
+  question: string;
+  options: { value: string }[];
+  timeLimit: number;
+}
+

@@ -1,0 +1,28 @@
+.trivia-room {
+  display: flex;
+  height: calc(100vh - 64px);
+}
+
+.trivia-room-aside {
+  padding: 24px;
+}
+
+.trivia-room-content {
+  display: flex;
+  flex: 1;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.trivia-room-inprogress {
+  text-align: center;
+  row-gap: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.trivia-room-inprogress-options {
+  display: flex;
+}

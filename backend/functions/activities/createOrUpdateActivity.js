@@ -9,6 +9,8 @@ exports.createOrUpdateActivity = https.onCall(async ({ data, auth }) => {
   const userId = auth?.uid;
   const serverTime = FieldValue.serverTimestamp();
 
+  console.log('**************************', data);
+
   try {
     if (!userId) {
       throw new https.HttpsError(
@@ -17,7 +19,7 @@ exports.createOrUpdateActivity = https.onCall(async ({ data, auth }) => {
       );
     }
 
-    if (!name || !communityId || !type) {
+    if (!name || !communityId || !type || !seasonId) {
       throw new https.HttpsError(
         'invalid-argument',
         'Faltan datos obligatorios.'
@@ -36,19 +38,18 @@ exports.createOrUpdateActivity = https.onCall(async ({ data, auth }) => {
       );
     }
 
-    if (seasonId) {
-      const seasonsSnapshot = await db
-        .collection('communities')
-        .doc(communityId)
-        .collection('seasons')
-        .get(seasonId);
+    const seasonDoc = await db
+      .collection('communities')
+      .doc(communityId)
+      .collection('seasons')
+      .doc(seasonId)
+      .get();
 
-      if (!seasonsSnapshot.exists) {
-        throw new https.HttpsError(
-          'not-found',
-          `La season con ID ${seasonId} no existe.`
-        );
-      }
+    if (!seasonDoc.exists) {
+      throw new https.HttpsError(
+        'not-found',
+        `La season con ID ${seasonId} no existe.`
+      );
     }
 
     const batch = db.batch();
@@ -133,7 +134,7 @@ exports.createOrUpdateActivity = https.onCall(async ({ data, auth }) => {
       activityId: activityRef.id,
       name,
       type,
-      seasonName: seasonsSnapshot.data().name,
+      seasonName: seasonDoc.data().name,
       action: activityId ? 'updated' : 'created',
     };
   } catch (error) {

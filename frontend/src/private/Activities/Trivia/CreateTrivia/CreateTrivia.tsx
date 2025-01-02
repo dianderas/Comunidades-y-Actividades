@@ -12,26 +12,40 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Backdrop, EditableLabel } from '../../../../components';
+import {
+  Backdrop,
+  EditableLabel,
+  EditableSelect,
+} from '../../../../components';
 import { useApi } from '../../../../hooks';
+import { getCommunityDetails } from '../../../../services/firebase';
 import {
   createOrUpdateActivity,
   getFullTrivia,
 } from '../../../../services/firebase/activity';
+import { createTriviaRoom } from '../../../../services/firebase/room';
 import {
   useCommunityDetailsStore,
   useCreateTriviaStore,
 } from '../../../../stores/zubstand';
 import { AnswerText, QuestionItem } from './components';
 import './CreateTrivia.css';
-import { createTriviaRoom } from '../../../../services/firebase/room';
 
 export const CreateTrivia = () => {
   const { communityId, activityId } = useParams();
   const [activityTile, setActivityTitle] = useState('Default title :)');
+  const [selectedSeason, setSelectedSeason] = useState<string>('');
+  const [seasonOptions, setSeasonOptions] = useState<
+    {
+      value: string;
+      label: string;
+    }[]
+  >();
+
   const navigate = useNavigate();
 
-  const { addActivity, updateActivityName } = useCommunityDetailsStore();
+  const { addActivity, updateActivityName, getSeasons, setCommunityDetails } =
+    useCommunityDetailsStore();
 
   const {
     questions,
@@ -69,11 +83,46 @@ export const CreateTrivia = () => {
     request: createTriviaRoom,
   });
 
+  const {
+    data: getCommunityDetailsResponse,
+    execute: getCommunityDetailsExecute,
+  } = useApi({
+    request: getCommunityDetails,
+  });
+
+  // Note: esto sucede solo si el usuario entra directamente a la url y por ende
+  // no se carga los details de la comunidad
   useEffect(() => {
-    if (activityId && communityId) {
+    if (getCommunityDetailsResponse) {
+      console.log(getCommunityDetailsResponse);
+      setCommunityDetails(communityId!, getCommunityDetailsResponse.data);
+      const { seasons } = getCommunityDetailsResponse.data;
+      setSelectedSeason(seasons[0].id);
+      setSeasonOptions(seasons.map((s) => ({ label: s.name, value: s.id })));
+    }
+  }, [communityId, getCommunityDetailsResponse, setCommunityDetails]);
+
+  useEffect(() => {
+    if (communityId) {
+      const seasons = getSeasons(communityId);
+      if (seasons) {
+        setSelectedSeason(seasons[0].id);
+        setSeasonOptions(seasons.map((s) => ({ label: s.name, value: s.id })));
+      } else {
+        getCommunityDetailsExecute(communityId);
+      }
+    }
+
+    if (communityId && activityId) {
       fetchTrivia({ activityId, communityId });
     }
-  }, [activityId, communityId, fetchTrivia]);
+  }, [
+    activityId,
+    communityId,
+    fetchTrivia,
+    getCommunityDetailsExecute,
+    getSeasons,
+  ]);
 
   // Nota: el removeQuestion esta causando una desincronizacion temporal en activeQuestionId, con esto lo aseguramos.
   useEffect(() => {
@@ -89,6 +138,7 @@ export const CreateTrivia = () => {
       if (data.action === 'created') {
         const { activityId: id, name, type, seasonName } = data;
         addActivity(communityId!, { id, name, seasonName, type });
+        navigate(`/community/${communityId}/activity/trivia/${id}`);
       } else {
         // 'updated'
         updateActivityName(communityId!, activityId!, data.name);
@@ -99,6 +149,7 @@ export const CreateTrivia = () => {
     addActivity,
     communityId,
     createOrUpdateResponse,
+    navigate,
     updateActivityName,
   ]);
 
@@ -130,6 +181,7 @@ export const CreateTrivia = () => {
       activityId,
       name: activityTile,
       communityId,
+      seasonId: selectedSeason,
       details: questions,
       type: 'trivia',
     });
@@ -141,18 +193,34 @@ export const CreateTrivia = () => {
 
   const anyError = error || fetchError || createRoomError;
 
+  console.log(seasonOptions);
+
   return (
     <>
       {(loading || fetchLoading || createRoomLoading) && <Backdrop />}
       <Box className="question-top-bar">
-        <EditableLabel
-          defaultValue={activityTile}
-          onSave={(value) => setActivityTitle(value)}
-        />
+        {seasonOptions && (
+          <Box className="question-top-bar-input" sx={{ mr: 2 }}>
+            <Typography variant="body1">Season:</Typography>
+            <EditableSelect
+              defaultValue={selectedSeason}
+              options={seasonOptions}
+            />
+          </Box>
+        )}
+        <Box className="question-top-bar-input">
+          <Typography variant="body1">Trivia Name:</Typography>
+          <EditableLabel
+            defaultValue={activityTile}
+            onSave={(value) => setActivityTitle(value)}
+          />
+        </Box>
         <div className="btn-actions">
-          <Button onClick={handleStatTrivia} variant="outlined" size="medium">
-            Start Trivia
-          </Button>
+          {activityId && (
+            <Button onClick={handleStatTrivia} variant="outlined" size="medium">
+              Iniciar Room
+            </Button>
+          )}
           <Button onClick={handleSave} variant="contained" size="medium">
             Save
           </Button>

@@ -3,6 +3,7 @@ import App from './App';
 import { AuthRedirectGuard, PrivateGuard } from './guards';
 import { lazy, Suspense } from 'react';
 import { TriviaRoom } from './private';
+import { Home } from './public';
 
 const Dashboard = lazy(() => import('./private/Dashboard/Dashboard'));
 const CreateTrivia = lazy(
@@ -78,7 +79,7 @@ const router = createBrowserRouter([
           },
         ],
       },
-      { path: '/home', element: <div>Home</div> },
+      { path: '/home', element: <Home /> },
       { path: '*', element: <h1>Pagina no encontrada</h1> },
     ],
   },
