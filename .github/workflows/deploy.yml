@@ -41,4 +41,4 @@ jobs:
           FIREBASE_AUTH_TOKEN: ${{ secrets.FIREBASE_AUTH_TOKEN }}
         run: |
           cd frontend
-          firebase deploy --only hosting
+          firebase deploy --only hosting --project ekisde-fe4e1 --token $FIREBASE_AUTH_TOKEN
