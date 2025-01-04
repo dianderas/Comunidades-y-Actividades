@@ -28,18 +28,20 @@ exports.nextQuestion = https.onCall(async ({ data, auth }) => {
       );
     }
 
-    const updatedScores = calculateScores(roomData);
-    console.log('updatedScores', updatedScores);
+    if (roomData.answers) {
+      const updatedScores = calculateScores(roomData);
+      console.log('updatedScores', updatedScores);
 
-    // Actualizar los puntajes en Firebase
-    const updatePromises = Object.entries(updatedScores).map(
-      ([userId, userData]) => {
-        console.log('userData', { userId, userData });
-        return roomRef.child(`players/${userId}`).update(userData);
-      }
-    );
+      // Actualizar los puntajes en Firebase
+      const updatePromises = Object.entries(updatedScores).map(
+        ([userId, userData]) => {
+          console.log('userData', { userId, userData });
+          return roomRef.child(`players/${userId}`).update(userData);
+        }
+      );
 
-    await Promise.all(updatePromises);
+      await Promise.all(updatePromises);
+    }
 
     const currentQuestionIndex = roomData.questions.findIndex(
       (q) => q.id === roomData.currentQuestion?.id

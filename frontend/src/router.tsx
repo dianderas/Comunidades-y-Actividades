@@ -4,6 +4,7 @@ import { AuthRedirectGuard, PrivateGuard } from './guards';
 import { lazy, Suspense } from 'react';
 import { TriviaRoom } from './private';
 import { Home } from './public';
+import { HudTool } from './private/HudTool/HudTool';
 
 const Dashboard = lazy(() => import('./private/Dashboard/Dashboard'));
 const CreateTrivia = lazy(
@@ -74,6 +75,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<div>Loading...</div>}>
                 <TriviaRoom />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/community/:communityId/hud-demo/:roomId',
+            element: (
+              <Suspense fallback={<div>Loading...</div>}>
+                <HudTool />
               </Suspense>
             ),
           },

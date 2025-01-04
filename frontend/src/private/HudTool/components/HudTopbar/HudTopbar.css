@@ -1,0 +1,40 @@
+.topbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #fff; /* Color de fondo */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: fadeInRight 0.8s ease-in-out;
+}
+
+.fade-in-lateral {
+  animation: fadeInLateral 0.5s ease-out forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease-in forwards;
+}
+
+@keyframes fadeInLateral {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+}
