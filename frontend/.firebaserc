@@ -6,7 +6,7 @@
     "ekisde-fe4e1": {
       "hosting": {
         "main-site": [
-          "ekisde"
+          "ekisde-fe4e1"
         ],
         "dev-site": [
           "dev.ekisde"
