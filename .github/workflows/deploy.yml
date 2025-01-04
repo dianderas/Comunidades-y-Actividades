@@ -40,6 +40,7 @@ jobs:
         env:
           FIREBASE_AUTH_TOKEN: ${{ secrets.FIREBASE_AUTH_TOKEN }}
         run: |
+          cd frontend
           firebase deploy --only hosting:main-site --project ekisde-fe4e1 --token $FIREBASE_AUTH_TOKEN
 
       # 6. Desplegar demo app (dev.ekisde.com)
@@ -47,4 +48,5 @@ jobs:
         env:
           FIREBASE_AUTH_TOKEN: ${{ secrets.FIREBASE_AUTH_TOKEN }}
         run: |
+          cd frontend
           firebase deploy --only hosting:dev-site --project ekisde-fe4e1 --token $FIREBASE_AUTH_TOKEN
