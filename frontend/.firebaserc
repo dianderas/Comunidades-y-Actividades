@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "ekisde-fe4e1"
-  }
+  },
+  "targets": {
+    "ekisde-fe4e1": {
+      "hosting": {
+        "main-site": [
+          "ekisde"
+        ],
+        "dev-site": [
+          "dev.ekisde"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
