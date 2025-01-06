@@ -52,7 +52,6 @@ exports.addMemberToCommunity = https.onCall(async ({ data, auth }) => {
     batch.set(memberSubRef, {
       userId,
       role,
-      nickanme,
       createdAt: FieldValue.serverTimestamp(),
     });
 

@@ -50,7 +50,20 @@ exports.createCommunity = https.onCall(async ({ data, auth }) => {
     batch.set(membersRef, {
       createdAt: FieldValue.serverTimestamp(),
       role: 'owner',
-      userId,
+      userId: ownerId,
+    });
+
+    const seasonRef = db
+      .collection('communities')
+      .doc(communityId)
+      .collection('seasons')
+      .doc();
+
+    await seasonRef.set({
+      seasonId: seasonRef.id,
+      name: 'Default',
+      status: 'active',
+      createdAt: FieldValue.serverTimestamp(),
     });
 
     const communityMemberRef = db

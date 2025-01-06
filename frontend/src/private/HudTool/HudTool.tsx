@@ -6,6 +6,7 @@ import { getRoomRef } from '../../services/firebase';
 import { RoomData } from '../../services/firebase/dtos';
 import { HudTopbar, RemainingTimeDisplay, TopPlayersList } from './components';
 import './HudTool.css';
+import { QuestionResults } from '../Activities/Trivia/TriviaRoom/components';
 
 const defaultRoomData: RoomData = {
   id: '',
@@ -58,7 +59,7 @@ export const HudTool = () => {
   }, [roomId]);
 
   useEffect(() => {
-    if (remainingTime === null || remainingTime <= 0) return;
+    if (remainingTime === null || remainingTime < 0) return;
 
     const timer = setTimeout(
       () => setRemainingTime((prev) => (prev as number) - 1),
@@ -67,6 +68,8 @@ export const HudTool = () => {
 
     return () => clearTimeout(timer);
   }, [remainingTime]);
+
+  console.log(remainingTime);
 
   return (
     <Box className="container">
@@ -82,9 +85,14 @@ export const HudTool = () => {
           <Box className="hud-aside">
             <TopPlayersList players={roomData?.players || {}} />
           </Box>
-          {remainingTime && (
+          {remainingTime !== null && remainingTime >= 0 && (
             <RemainingTimeDisplay remainingTime={remainingTime} />
           )}
+          <Box className="hud-result">
+            {remainingTime === -1 && (
+              <QuestionResults roomData={roomData} showTitle={false} />
+            )}
+          </Box>
         </>
       )}
     </Box>

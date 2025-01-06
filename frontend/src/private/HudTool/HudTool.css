@@ -6,11 +6,22 @@
 }
 
 .hud-topbar {
-  margin: 24px;
+  position: absolute;
+  top: 16px;
+  width: 100%;
+  padding: 0 24px;
 }
 
 .hud-aside {
   position: absolute;
   left: 16px;
   top: 50%;
+}
+
+.hud-result {
+  width: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

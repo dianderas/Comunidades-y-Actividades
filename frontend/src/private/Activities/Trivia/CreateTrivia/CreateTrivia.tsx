@@ -97,6 +97,7 @@ export const CreateTrivia = () => {
       console.log(getCommunityDetailsResponse);
       setCommunityDetails(communityId!, getCommunityDetailsResponse.data);
       const { seasons } = getCommunityDetailsResponse.data;
+      console.log('*******************1', seasons);
       setSelectedSeason(seasons[0].id);
       setSeasonOptions(seasons.map((s) => ({ label: s.name, value: s.id })));
     }
@@ -106,6 +107,7 @@ export const CreateTrivia = () => {
     if (communityId) {
       const seasons = getSeasons(communityId);
       if (seasons) {
+        console.log('*******************2', seasons);
         setSelectedSeason(seasons[0].id);
         setSeasonOptions(seasons.map((s) => ({ label: s.name, value: s.id })));
       } else {

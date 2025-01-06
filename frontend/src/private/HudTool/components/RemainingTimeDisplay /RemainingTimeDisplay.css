@@ -1,3 +1,16 @@
+.remaining-time-wrapper {
+  text-align: center;
+  width: 100%;
+}
+
+.top {
+  top: 80px;
+}
+
+.centered {
+  top: 50%;
+}
+
 @keyframes fadeInOut {
   0% {
     opacity: 0;
@@ -11,17 +24,4 @@
     opacity: 0;
     transform: scale(0.5);
   }
-}
-
-.remaining-time-wrapper {
-  text-align: center;
-  width: 100%;
-}
-
-.bottom {
-  bottom: 20px;
-}
-
-.centered {
-  bottom: 50%;
 }

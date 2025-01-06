@@ -66,6 +66,7 @@ exports.getCommunityDetails = https.onCall(async ({ data, auth }) => {
     const seasons = seasonsSnapshot.docs.map((doc) => ({
       id: doc.id,
       name: doc.data().name,
+      status: doc.data().status,
     }));
 
     // Obtener todas las actividades activas y sus nombres de temporada

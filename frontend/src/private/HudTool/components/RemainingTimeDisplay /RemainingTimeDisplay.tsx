@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import './RemainingTimeDisplay.css';
 
 interface Props {
   remainingTime: number;
@@ -19,11 +20,11 @@ export const RemainingTimeDisplay = ({ remainingTime }: Props) => {
     }
   }, [remainingTime]);
 
-  if (remainingTime <= 0) return null;
+  if (remainingTime < 0) return null;
 
   return (
     <Box
-      className={`remaining-time-wrapper ${isCentered ? 'centered' : 'bottom'}`}
+      className={`remaining-time-wrapper ${isCentered ? 'centered' : 'top'}`}
       sx={{
         position: 'absolute',
         left: '50%',

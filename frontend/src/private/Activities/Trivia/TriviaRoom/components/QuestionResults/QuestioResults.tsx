@@ -3,9 +3,10 @@ import { RoomData } from '../../../../../../services/firebase/dtos';
 
 interface Props {
   roomData: RoomData;
+  showTitle?: boolean;
 }
 
-export const QuestionResults = ({ roomData }: Props) => {
+export const QuestionResults = ({ roomData, showTitle = true }: Props) => {
   const MIN_HEIGHT = 20;
   const MAX_HEIGHT = 200;
 
@@ -24,15 +25,16 @@ export const QuestionResults = ({ roomData }: Props) => {
 
   return (
     <Box>
-      <Typography variant="h6" textAlign="center" mb={2}>
-        Resultados de la pregunta
-      </Typography>
+      {showTitle && (
+        <Typography variant="h6" textAlign="center" mb={2}>
+          Resultados de la pregunta
+        </Typography>
+      )}
       <Box
         display="flex"
         justifyContent="space-evenly"
         alignItems="flex-end"
         height="280px" // Altura total del contenedor de las barras
-        borderTop="1px solid #ccc"
         pt={2}
       >
         {roomData?.currentQuestionResults &&
