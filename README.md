@@ -1,6 +1,6 @@
 # Proyecto: [Nombre del Proyecto]
 
-Este proyecto incluye un frontend desarrollado con `Vite` y un backend basado en `Firebase` (Functions, Firestore, Auth, Realtime Database, Hosting). Este documento describe cómo desplegar y ejecutar el proyecto localmente para propósitos de desarrollo.
+Este proyecto incluye un frontend React desarrollado con `Vite` y un backend basado en `Firebase` (Functions, Firestore, Auth, Realtime Database, Hosting). Este documento describe cómo desplegar y ejecutar el proyecto localmente para propósitos de desarrollo.
 
 ## Requisitos Previos
 
